@@ -15,6 +15,23 @@ per-file diff commands.
 
 ### Added
 
+- **Egypt software-engineering market support** - adds a verified, zero-runtime-
+  dependency `tanqeeb-egypt-search` CLI with search/detail parsing and tests;
+  English and Arabic software, banking-technology, platform/security, and data
+  queries; a first-party Egyptian bank source registry; and policy-respecting
+  WebSearch fallbacks for Wuzzuf, Bayt Egypt, Glassdoor Egypt, and Jooble Egypt.
+  The Danish portal examples remain disabled.
+
+- **Codex now has first-class thin adapters for the complete workflow** (`AGENTS.md`,
+  `.agents/skills/job-*/SKILL.md`, `.agents/references/codex-runtime.md`,
+  `.codex/config.toml`) - fourteen portable skills route setup, scraping, ranking,
+  applications, outcomes, interviews, integrations, reports, extension commands,
+  and reset to the existing canonical `.claude/` specifications without copying
+  them. A shared runtime map translates Claude-specific tool names, while three
+  optional read-only Codex roles adapt the posting fetcher, scorer, and application
+  reviewer. Compatibility tests pin every pointer and the conservative Codex
+  sandbox configuration.
+
 - **CI runs the Python suite on Windows** (`.github/workflows/ci.yml` `python-tests-windows`) - every
   job ran on Ubuntu, so a Windows-only failure reached master with all checks green: #480's test
   (an atomic rename that Windows file locking refuses) and #486's (a tool printing non-ASCII JSON

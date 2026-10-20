@@ -1,90 +1,113 @@
-# Search Queries for Job Scraper
+# Egypt Software-Engineering Search Strategy
 
-<!-- SETUP: Customize these queries based on your skills, target roles, and location -->
+This fork targets software-engineering opportunities in Egypt, with Egyptian
+banks and financial institutions as the priority sector. Search in English and
+Arabic because local employers use both. Candidate-specific seniority, stack,
+and commute constraints still come from `CLAUDE.md` after `/setup` is run.
 
-## Installed portal CLIs (primary for `/scrape`)
+See `egypt-sources.md` for access constraints and the maintained bank list.
 
-`/scrape` discovers every portal skill under `.agents/skills/*/SKILL.md` and runs its CLI first. Shipped country-agnostic CLIs include `linkedin-search` and `freehire-search`; Danish demos and any skill you add with `/add-portal` are included the same way. You do **not** need a matching `site:` line below for those CLIs to run.
+## Installed portal CLIs (primary)
 
-The `site:` query templates in this file are the **WebSearch fallback** — for portals without a CLI, company career pages, or when a CLI fails.
+- `tanqeeb-egypt-search`: public Egypt search/detail pages; use `--jobage 14`
+  and `--location Egypt` (or Cairo/Giza/Alexandria).
+- `linkedin-search`: use `--location "Egypt" --jobage 14`.
+- `freehire-search`: optional secondary source for Egypt/remote technical roles.
+- The four Danish demo portals remain installed but disabled.
 
-**Language scope:** write every query category in every language listed in your CLAUDE.md Languages table (typically 1-2, sometimes more). A posting requiring a language you have *not* declared, as a job condition, is excluded before scoring; a posting requiring a *higher level* than you declared in a language you *do* work in is flagged for your own judgment, not excluded — see `04-job-evaluation.md`'s Language Gate, the single source of truth for this rule. Translate each category's keywords rather than machine-translating word-for-word (e.g. "Frontend Developer" -> "Desarrollador Frontend", not a literal word-for-word translation) if you work in more than one language.
+## WebSearch fallbacks
 
-## Search Sites
+Use these when a portal has no permitted, verified CLI or when an enabled CLI
+fails. Do not bypass robots rules, login walls, or bot protection.
 
-Primary (your market's job boards - scaffold one with `/add-portal`):
-- **[YOUR_JOB_BOARD]** - your market's largest general job board
-- **linkedin.com/jobs** - LinkedIn job listings (filter: [YOUR_COUNTRY] / [YOUR_CITY]); also covered by `linkedin-search` CLI
-- **[YOUR_INDUSTRY_JOB_BOARD]** - a niche/industry board for your field (optional)
-- **[YOUR_ADDITIONAL_JOB_BOARD]** - another major board for your market (optional)
-
-Secondary (company career pages via Google):
-- Direct Google searches with `site:` filters for known target companies
-
-## Query Categories
-
-Queries are grouped by priority. Write **each category in every language from your Languages table** (see Language scope above). Combine each query with your location terms (e.g. your city, region, or metro area) where the site supports it.
-
-**Organize by function, not job title.** The same underlying work carries different titles across companies and markets (a "Data Scientist" role at one employer may be posted as "Insights Analyst" or "Data Consultant" at another). Name each priority category after the function it covers, and list several plausible job titles as query variants within that category rather than betting an entire priority tier on one exact title string.
-
-### Priority 1: [YOUR_PRIMARY_ROLE_TYPE]
-
-These match your strongest and most desired career direction.
-
-```
-site:[YOUR_JOB_BOARD] "[YOUR_PRIMARY_JOB_TITLE_1]" [YOUR_CITY]
-site:[YOUR_JOB_BOARD] "[YOUR_PRIMARY_JOB_TITLE_2]" [YOUR_CITY]
-site:[YOUR_JOB_BOARD] "[YOUR_KEY_SKILL]" [YOUR_CITY]
-site:linkedin.com/jobs "[YOUR_PRIMARY_JOB_TITLE_1]" [YOUR_COUNTRY]
+```text
+site:wuzzuf.net ("software engineer" OR "software developer" OR "backend developer") Egypt
+site:wuzzuf.net ("مهندس برمجيات" OR "مطور برمجيات") مصر
+site:bayt.com/en/egypt/jobs ("software engineer" OR "software developer")
+site:eg.jooble.org ("software engineer" OR "backend developer") Egypt
+site:glassdoor.com/Job/egypt ("software engineer" OR "software developer")
+site:egypt.tanqeeb.com ("software engineer" OR "مهندس برمجيات")
 ```
 
-### Priority 2: [YOUR_DOMAIN_EXPERTISE]
+## Priority 1: Software engineering
 
-These match your domain expertise.
+Run the following title variants independently; do not put every synonym into
+one portal request if that portal treats the phrase literally.
 
-```
-site:[YOUR_JOB_BOARD] [YOUR_DOMAIN_KEYWORD_1] [YOUR_CITY] OR [YOUR_REGION]
-site:[YOUR_JOB_BOARD] [YOUR_DOMAIN_KEYWORD_2] [YOUR_COUNTRY]
-site:linkedin.com/jobs [YOUR_DOMAIN_KEYWORD_1] [YOUR_CITY] [YOUR_COUNTRY]
-```
-
-### Priority 3: [YOUR_ADJACENT_ROLE_TYPE]
-
-Adjacent roles you could pivot into.
-
-```
-site:[YOUR_JOB_BOARD] "[YOUR_ADJACENT_TITLE_1]" [YOUR_KEY_SKILL] [YOUR_CITY]
-site:[YOUR_JOB_BOARD] "[YOUR_ADJACENT_TITLE_2]" [YOUR_KEY_SKILL] [YOUR_CITY]
-```
-
-### Priority 4: Broader Technical / Consulting
-
-Wider net for general technical roles.
-
-```
-site:[YOUR_JOB_BOARD] [YOUR_KEY_SKILL] developer [YOUR_CITY]
-site:linkedin.com/jobs "[YOUR_KEY_SKILL] developer" [YOUR_CITY]
-site:[YOUR_JOB_BOARD] "technical consultant" [YOUR_DOMAIN] [YOUR_CITY]
+```text
+software engineer
+software developer
+backend engineer
+backend developer
+frontend engineer
+frontend developer
+full stack engineer
+full stack developer
+مهندس برمجيات
+مطور برمجيات
+مطور نظم
 ```
 
-## Location Filter
+## Priority 2: Banking technology and digital banking
 
-When evaluating results, verify the job location is within reasonable commute distance from your home. Define acceptable areas:
-- [YOUR_CITY] and surrounding areas
-- [ACCEPTABLE_AREA_1]
-- [ACCEPTABLE_AREA_2]
-- [BORDERLINE_AREA] (borderline - ~X min by transit)
-- [TOO_FAR_AREA] (too far)
+```text
+software engineer bank
+backend engineer fintech
+digital banking engineer
+core banking developer
+payments engineer
+API integration engineer bank
+banking applications support
+مهندس برمجيات بنك
+مطور أنظمة بنكية
+تكنولوجيا المعلومات بنك
+```
 
-## Language Filter
+Search the employer sites and official career profiles listed in
+`egypt-sources.md` before relying on aggregator copies. Use combinations of the
+role terms above with each bank name.
 
-Your working languages and levels are in CLAUDE.md's Languages table. When filtering scraped results, apply `04-job-evaluation.md`'s Language Gate: a posting requiring a language you haven't declared at all is excluded; a posting requiring a higher level than you declared in a language you do work in is not excluded, flag it clearly instead (see `job-scraper/SKILL.md`'s Step 3 "Quick Fit Assessment" for how the flag surfaces in `/scrape` output). Postings simply *written* in a language you don't work in, that don't require it on the job, are fine.
+## Priority 3: Platform, cloud, and security
 
-## Date Filter
+```text
+DevOps engineer
+site reliability engineer
+cloud engineer
+cybersecurity engineer
+application security engineer
+information security bank
+مهندس حوسبة سحابية
+مهندس أمن معلومات
+أمن سيبراني بنك
+```
 
-Only include jobs posted within the last 14 days, or with an application deadline that has not yet passed. If a posting date cannot be determined, include it but flag as "date unknown".
+## Priority 4: Data and adjacent technical roles
 
-## Adapting Queries
+```text
+data engineer
+business intelligence developer
+integration developer
+systems analyst
+technical business analyst
+quality assurance engineer
+مهندس بيانات
+محلل نظم
+مطور ذكاء أعمال
+```
 
-If the user specifies a focus area, select queries from the matching category and also generate 2-3 custom queries for that focus. For example:
-- "/scrape [focus_area]" -> relevant category queries + custom focus-specific queries
+## Location scope
+
+Primary scope is Egypt. Prioritize Cairo, New Cairo, Giza, Smart Village,
+Sheikh Zayed, 6th of October, and remote roles open to Egypt. Include
+Alexandria when the candidate's commute/relocation preferences permit it.
+Never infer commute acceptance before `CLAUDE.md` is populated.
+
+## Freshness and source priority
+
+- Prefer postings from the last 14 days.
+- Prefer the bank/employer's own posting, then a verified portal detail page,
+  then an indexed WebSearch result.
+- Tanqeeb and Jooble aggregate other sources. Deduplicate by canonical URL and
+  company/title before presenting results.
+- When an indexed result has no live employer or portal page, mark it
+  unreachable rather than presenting it as open.

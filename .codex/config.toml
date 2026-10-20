@@ -1,0 +1,26 @@
+# Project-local Codex defaults. Codex loads this file only when the project is
+# trusted. Organization or user policy may impose stricter settings.
+approval_policy = "on-request"
+sandbox_mode = "workspace-write"
+
+[sandbox_workspace_write]
+# Portal CLIs and arbitrary shell commands do not receive ambient network
+# access. Use Codex web tools or request narrow approval when a canonical
+# workflow requires a live CLI call.
+network_access = false
+
+[agents]
+enabled = true
+max_concurrent_threads_per_session = 3
+
+[agents.posting_fetcher]
+description = "Read-only specialist that retrieves and integrity-checks one job posting for job-apply."
+config_file = "agents/posting-fetcher.toml"
+
+[agents.posting_scorer]
+description = "Read-only specialist that retrieves and scores batches of job postings for job-rank."
+config_file = "agents/posting-scorer.toml"
+
+[agents.application_reviewer]
+description = "Read-only hiring-manager proxy that researches a company and critiques application drafts."
+config_file = "agents/application-reviewer.toml"

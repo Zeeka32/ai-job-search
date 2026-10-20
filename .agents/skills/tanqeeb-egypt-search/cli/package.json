@@ -1,0 +1,15 @@
+{
+  "name": "tanqeeb-egypt-cli",
+  "version": "1.0.0",
+  "description": "Zero-runtime-dependency CLI for public Tanqeeb Egypt job listings",
+  "type": "module",
+  "scripts": {
+    "start": "bun run src/cli.ts",
+    "test": "bun test --timeout 30000",
+    "typecheck": "tsc --noEmit"
+  },
+  "devDependencies": {
+    "@types/bun": "1.3.14",
+    "typescript": "^5.4.0"
+  }
+}

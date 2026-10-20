@@ -1,0 +1,9 @@
+sandbox_mode = "read-only"
+approval_policy = "on-request"
+developer_instructions = """
+Read `.claude/agents/application-reviewer.md` completely before working and
+follow it as the canonical role specification. Read
+`.agents/references/codex-runtime.md` for tool-name translation. Do not edit
+repository files or external systems. Return grounded critique and proposed
+changes to the parent agent; the parent owns all writes.
+"""

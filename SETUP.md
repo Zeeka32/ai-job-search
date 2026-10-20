@@ -14,6 +14,18 @@ npm install -g @anthropic-ai/claude-code
 
 You'll need an Anthropic API key or a Claude Pro/Team subscription. See the [Claude Code docs](https://docs.anthropic.com/en/docs/claude-code) for details.
 
+### Codex
+
+Codex is supported through the repository's portable `$job-*` skills. Install
+or open Codex using the [official Codex documentation](https://developers.openai.com/codex),
+open this repository, and mark the project trusted so its `.codex/config.toml`
+configuration can load.
+
+The Codex configuration uses `workspace-write`, asks before operations that
+need approval, and leaves shell network access disabled by default. Live portal
+CLI calls may therefore request narrow network approval; Codex web tools remain
+available according to the client and organization policy.
+
 ### Python
 
 Python 3.10+ is required for the salary lookup tool. Check with:
@@ -204,7 +216,9 @@ If you're outside Denmark, you can generate an equivalent search skill for your 
 
 ## 4. Run the setup interview
 
-Start Claude Code in the repository:
+Start either supported agent in the repository.
+
+Claude Code:
 
 ```bash
 claude
@@ -215,6 +229,17 @@ Then run the onboarding:
 ```
 /setup
 ```
+
+Codex:
+
+```text
+$job-setup
+```
+
+The remaining Codex entry points follow the same pattern: `$job-scrape`,
+`$job-rank`, `$job-apply`, `$job-outcome`, and `$job-interview`. They are thin
+adapters: `.claude/` remains the canonical source, while
+`.agents/references/codex-runtime.md` translates runtime-specific tools.
 
 Claude will offer three paths:
 
@@ -349,3 +374,11 @@ Shared Claude Code permissions now live in `.claude/settings.json`: an `allow` l
 ```bash
 rm .claude/settings.local.json
 ```
+
+### Codex adapters not appearing
+
+Confirm that the project is trusted and that the client was restarted after the
+skills were added. The workflow adapters live under `.agents/skills/job-*/`;
+`AGENTS.md` contains the routing table, and `.codex/config.toml` declares the
+optional read-only specialist roles. Claude's `.claude/settings.json` does not
+grant Codex permissions.

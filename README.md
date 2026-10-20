@@ -12,7 +12,11 @@
 
 [![CI](https://github.com/MadsLorentzen/ai-job-search/actions/workflows/ci.yml/badge.svg)](https://github.com/MadsLorentzen/ai-job-search/actions/workflows/ci.yml)
 
-An AI-powered job application framework built on [Claude Code](https://claude.com/claude-code). Fork it, fill in your profile, and let Claude evaluate job postings, tailor your CV, write cover letters, and prepare you for interviews.
+An AI-powered job application framework with native workflows for
+[Claude Code](https://claude.com/claude-code) and thin adapters for
+[Codex](https://developers.openai.com/codex). Fork it, fill in your profile,
+and let your agent evaluate job postings, tailor your CV, write cover letters,
+and prepare you for interviews.
 
 > Note: This is an independent open-source project and is not affiliated with, endorsed by, sponsored by, or maintained by Anthropic. Anthropic and Claude Code are referenced only to describe the toolchain this workflow uses.
 >
@@ -61,7 +65,7 @@ The framework encodes career guidance best practices, including structured evalu
 
 ## Prerequisites
 
-- [Claude Code](https://claude.com/claude-code) (CLI). Claude Code has no free tier: you need a Claude Pro/Max/Team subscription or Anthropic API credits (pay-per-token, usually cheaper for occasional use). Using a different agent tool (Codex, Antigravity, Gemini CLI)? Start at [`AGENTS.md`](AGENTS.md) - the portal search skills work there out of the box, and [community forks](https://github.com/MadsLorentzen/ai-job-search/discussions/78) adapt the full workflow.
+- An agent runtime: [Claude Code](https://claude.com/claude-code) or [Codex](https://developers.openai.com/codex). Claude Code uses the `/setup`, `/scrape`, and `/apply` command specifications directly. Codex uses the bundled `$job-setup`, `$job-scrape`, and `$job-apply` thin adapter skills; both runtimes share the same canonical workflow and profile files under `.claude/`.
 - Python 3.10+
 - [Bun](https://bun.sh) (for job search CLI tools)
 - LaTeX distribution with `lualatex` and `xelatex`: [TeX Live](https://tug.org/texlive/), [MacTeX](https://tug.org/mactex/), [TinyTeX](https://yihui.org/tinytex/), or [MiKTeX](https://miktex.org/). The CV compiles with `lualatex` (pdflatex often fails on modern MiKTeX installs with `fontawesome5` font-expansion errors); the cover letter compiles with `xelatex` because `cover.cls` requires `fontspec`. If using a minimal TeX install such as TinyTeX or BasicTeX, install the extra packages listed in [SETUP.md](SETUP.md#minimal-tex-install-tinytexbasictex).
@@ -105,6 +109,17 @@ claude
 /setup
 ```
 
+With Codex, open this repository as a trusted project and run:
+
+```text
+$job-setup
+```
+
+The project-local `.codex/config.toml` keeps filesystem access workspace-scoped,
+uses on-request approvals, and disables shell network access by default. The
+`$job-*` skills translate Codex tools to the canonical `.claude/` workflows
+without copying them.
+
 `/setup` offers three paths: read your `documents/` folder if you have one populated (CV PDF, LinkedIn export, diplomas, reference letters, past applications), import a single CV pasted in chat, or walk through an interview. It auto-detects what you have and asks. Documents-folder mode is idempotent and safe to re-run as you add more material; see `documents/README.md` for the layout.
 
 ### 4. Search for jobs
@@ -113,6 +128,8 @@ claude
 /scrape
 ```
 
+Codex users invoke `$job-scrape` instead.
+
 This searches multiple job portals for positions matching your profile, deduplicates results, and presents them sorted by fit. Pick a match to run `/apply` on it directly — or, when a scrape returns more jobs than you want to eyeball, run `/rank` to batch-score them all against the fit framework and get a ranked shortlist first.
 
 ### 5. Apply to a job
@@ -120,6 +137,8 @@ This searches multiple job portals for positions matching your profile, deduplic
 ```bash
 /apply https://jobindex.dk/job/1234567
 ```
+
+The Codex equivalent is `$job-apply https://jobindex.dk/job/1234567`.
 
 If the URL can't be fetched (some job portals block automated access), you can paste the job description directly instead:
 
@@ -180,13 +199,19 @@ ai-job-search/
 │   │   ├── job-scraper/               # Job search orchestration
 │   │   └── upskill/                   # /upskill skill gap analysis and learning plan
 │   └── settings.json                  # Claude Code permissions (shared, scoped)
-├── .agents/skills/                    # Job portal CLI tools
-│   ├── jobbank-search/                # Akademikernes Jobbank (Denmark)
-│   ├── jobdanmark-search/             # Jobdanmark.dk (Denmark)
-│   ├── jobindex-search/               # Jobindex.dk (Denmark)
-│   ├── jobnet-search/                 # Jobnet.dk (Denmark, government portal)
-│   ├── linkedin-search/               # LinkedIn public job listings (country-agnostic)
-│   └── freehire-search/               # freehire.me tech job aggregator (multi-market, REST API)
+├── .agents/
+│   ├── references/codex-runtime.md    # Shared Claude-to-Codex tool mapping
+│   └── skills/                        # Portal tools + thin Codex workflow adapters
+│       ├── jobbank-search/            # Akademikernes Jobbank (Denmark)
+│       ├── jobdanmark-search/         # Jobdanmark.dk (Denmark)
+│       ├── jobindex-search/           # Jobindex.dk (Denmark)
+│       ├── jobnet-search/             # Jobnet.dk (Denmark, government portal)
+│       ├── linkedin-search/           # LinkedIn public job listings (country-agnostic)
+│       ├── freehire-search/           # freehire.me tech job aggregator (multi-market, REST API)
+│       └── job-*/                     # $job-setup, $job-apply, $job-rank, ...
+├── .codex/
+│   ├── config.toml                    # Conservative project sandbox + agent roles
+│   └── agents/                        # Read-only posting/reviewer role adapters
 ├── cv/
 │   └── main_example.tex               # moderncv LaTeX template
 ├── cover_letters/
@@ -303,6 +328,17 @@ The four Danish CLI tools in `.agents/skills/` (Jobbank, Jobdanmark, Jobindex, J
 Give it your local job board's URL. The command investigates the portal (search-URL pattern, result-page structure, robots.txt/access rules), scaffolds a CLI skill with the same structure, commands, and output contract as the shipped ones, and test-runs a live query before registering anything. Auth-walled portals are declined, and portals with restrictive terms get a prominent personal-use-only warning in the generated skill. The generated skill is market-specific and lives in your fork; the generator itself is the universal part.
 
 Maintaining a fork adapted to your market or language? Add it to the [Community forks & adaptations](https://github.com/MadsLorentzen/ai-job-search/discussions/78) thread so others can find it.
+
+### Egypt fork
+
+This fork includes a verified `tanqeeb-egypt-search` CLI and an Egypt-focused
+software-engineering strategy under
+`.claude/skills/job-scraper/search-queries.md`. Wuzzuf, Bayt Egypt, Glassdoor
+Egypt, and Jooble Egypt are covered through WebSearch fallbacks because their
+current access policies do not support the same unauthenticated CLI pattern.
+Direct Egyptian bank career pages are searched first; see
+`.claude/skills/job-scraper/egypt-sources.md` for the source registry and
+access notes. The Danish demo portals remain installed but disabled.
 
 For **country-agnostic** starting points outside Denmark, the repo ships two portal skills alongside the Danish demos:
 
